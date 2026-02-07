@@ -37,14 +37,19 @@ local function close_book_before_suspend(inhibit)
     beforeSuspend_original(inhibit)
 end
 
-function CloseBookOnSuspend:init()
-    self.ui.menu:registerToMainMenu(self)
-    Dispatcher:registerAction("toggle_close_book", {
+function CloseBookOnSuspend:onDispatcherRegisterActions()
+    Dispatcher:registerAction("close_book_on_suspend_toggle", {
         category = "none",
-        event = "ToggleCloseBook",
+        event = "CloseBookToggle",
         title = _("Toggle CloseBookOnSuspend"),
         filemanager = true,
     })
+end
+
+function CloseBookOnSuspend:init()
+    self.ui.menu:registerToMainMenu(self)
+    self:onDispatcherRegisterActions()
+    
     local is_enabled = getSettingOrDefault("is_enabled", false)
     if is_enabled then
         self:enable()
@@ -75,7 +80,7 @@ function CloseBookOnSuspend:disable()
     setSetting("is_enabled", false)
 end
 
-function CloseBookOnSuspend:onToggleCloseBook()
+function CloseBookOnSuspend:onCloseBookToggle()
     if self.is_enabled then
         self:disable()
     else
@@ -92,7 +97,7 @@ function CloseBookOnSuspend:addToMainMenu(menu_items)
         text = _("Close book on suspend"),
         checked_func = function() return self:isEnabled() end,
         callback = function()
-            self:onToggleCloseBook()
+            self:onCloseBookToggle()
         end,
     }
 end
