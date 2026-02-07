@@ -28,7 +28,7 @@ end
 
 local beforeSuspend_original = Device._beforeSuspend
 
-local function modify_before_suspend(inhibit)
+local function close_book_before_suspend(inhibit)
     -- Cloase Book and go to Hone
     if ReaderUI.instance then
         ReaderUI.instance:onHome()
@@ -42,7 +42,7 @@ function CloseBookOnSuspend:init()
     Dispatcher:registerAction("toggle_close_book", {
         category = "none",
         event = "ToggleCloseBook",
-        title = _("ToggleCloseBook"),
+        title = _("Toggle CloseBookOnSuspend"),
         filemanager = true,
     })
     local is_enabled = getSettingOrDefault("is_enabled", false)
@@ -58,9 +58,9 @@ function CloseBookOnSuspend:enable()
         return
     end
     -- add close book function
-    Device._beforeSuspend = modify_before_suspend 
+    Device._beforeSuspend = close_book_before_suspend 
     self.is_enabled = true
-    -- save on local memory
+    -- save state on device memory
     setSetting("is_enabled", true)
 end
 
@@ -71,11 +71,11 @@ function CloseBookOnSuspend:disable()
     -- Go back to default behavior
     Device._beforeSuspend = beforeSuspend_original 
     self.is_enabled = false
-    -- save on local memory
+    -- save state on device memory
     setSetting("is_enabled", false)
 end
 
-function CloseBookOnSuspend:toggle()
+function CloseBookOnSuspend:onToggleCloseBook()
     if self.is_enabled then
         self:disable()
     else
@@ -92,7 +92,7 @@ function CloseBookOnSuspend:addToMainMenu(menu_items)
         text = _("Close book on suspend"),
         checked_func = function() return self:isEnabled() end,
         callback = function()
-            self:toggle()
+            self:onToggleCloseBook()
         end,
     }
 end
