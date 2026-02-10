@@ -28,58 +28,75 @@ end
 
 local beforeSuspend_original = Device._beforeSuspend
 
-local function modify_before_suspend(inhibit)
-    -- Cloase Book and go to Hone
+local function close_book_before_suspend(inhibit)
+    -- Closes Book and goes to Home
     if ReaderUI.instance then
         ReaderUI.instance:onHome()
     end
-    -- Do the normal Before Suspend Actions
+    -- Do normal Before Suspend actions
     beforeSuspend_original(inhibit)
+end
+
+function CloseBookOnSuspend:onDispatcherRegisterActions()
+    Dispatcher:registerAction("close_book_on_suspend_toggle", {
+        category = "none",
+        event = "CloseBookToggle",
+        title = _("Toggle CloseBookOnSuspend"),
+        filemanager = true,
+    })
+    Dispatcher:registerAction("close_book_on_suspend_enable", {
+        category = "none",
+        event = "CloseBookEnable",
+        title = _("Enable CloseBookOnSuspend"),
+        filemanager = true,
+    })
+    Dispatcher:registerAction("close_book_on_suspend_disable", {
+        category = "none",
+        event = "CloseBookDisable",
+        title = _("Disable CloseBookOnSuspend"),
+        filemanager = true,
+    })
 end
 
 function CloseBookOnSuspend:init()
     self.ui.menu:registerToMainMenu(self)
-    Dispatcher:registerAction("toggle_close_book", {
-        category = "none",
-        event = "ToggleCloseBook",
-        title = _("ToggleCloseBook"),
-        filemanager = true,
-    })
+    self:onDispatcherRegisterActions()
+    
     local is_enabled = getSettingOrDefault("is_enabled", false)
     if is_enabled then
-        self:enable()
+        self:onCloseBookEnable()
     else
-        self:disable()
+        self:onCloseBookDisable()
     end
 end
 
-function CloseBookOnSuspend:enable()
+function CloseBookOnSuspend:onCloseBookEnable()
     if self.is_enabled then
         return
     end
     -- add close book function
-    Device._beforeSuspend = modify_before_suspend 
+    Device._beforeSuspend = close_book_before_suspend 
     self.is_enabled = true
-    -- save on local memory
+    -- save state on device memory
     setSetting("is_enabled", true)
 end
 
-function CloseBookOnSuspend:disable()
+function CloseBookOnSuspend:onCloseBookDisable()
     if not self.is_enabled then
         return
     end
     -- Go back to default behavior
     Device._beforeSuspend = beforeSuspend_original 
     self.is_enabled = false
-    -- save on local memory
+    -- save state on device memory
     setSetting("is_enabled", false)
 end
 
-function CloseBookOnSuspend:toggle()
+function CloseBookOnSuspend:onCloseBookToggle()
     if self.is_enabled then
-        self:disable()
+        self:onCloseBookDisable()
     else
-        self:enable()
+        self:onCloseBookEnable()
     end
 end
 
@@ -92,7 +109,7 @@ function CloseBookOnSuspend:addToMainMenu(menu_items)
         text = _("Close book on suspend"),
         checked_func = function() return self:isEnabled() end,
         callback = function()
-            self:toggle()
+            self:onCloseBookToggle()
         end,
     }
 end
