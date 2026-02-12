@@ -11,7 +11,7 @@ The code for this plugin was inspired by this [Github Issue](https://github.com/
 - Has Actions that can be used on Profile.
 
 ## Instalation
-- Download the latest [ZIP](https://github.com/oraliahdz/close-book-on-suspend/archive/refs/heads/main.zip) and extract the archive.
+- Download the latest [ZIP](https://github.com/oraliahdz/closebookonsuspend.koplugin/archive/refs/heads/main.zip) and extract the archive.
 - Copy the folder `closebookonsuspend.koplugin` to your KOReader installation, inside the `plugins` folder. 
     - For Kobo devices, this is usually `.adds/koreader/plugins` in the device storage.
 - Restart KOReader.
