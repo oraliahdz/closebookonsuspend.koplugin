@@ -3,5 +3,5 @@ return {
     name = "closebookonsuspend",
     fullname = _("Close book on Suspend"),
     description = _([[Close book on Suspend and goes to Home]]),
-    version = "1.0",
+    version = "1.1",
 }

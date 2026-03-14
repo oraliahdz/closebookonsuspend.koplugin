@@ -1,5 +1,5 @@
 local WidgetContainer = require("ui/widget/container/widgetcontainer")
-local G_reader_settings = require("luasettings"):open(require("datastorage"):getSettingsDir() .. "/settings.annotationsviewer.lua")
+local G_reader_settings = require("luasettings"):open(require("datastorage"):getSettingsDir() .. "/settings.plugin.lua")
 local _ = require("gettext")
 local Device = require("device")
 local Dispatcher = require("dispatcher")
